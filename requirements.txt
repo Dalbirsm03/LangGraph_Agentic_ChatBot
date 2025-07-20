@@ -14,3 +14,4 @@ langchain_groq
 pydantic==2.10.6
 langgraph
 langchain-tavily
+langgraph
