@@ -17,3 +17,5 @@ langchain-tavily
 langgraph
 langchain-huggingface
 arxiv
+tavily-python
+langchain-tavily

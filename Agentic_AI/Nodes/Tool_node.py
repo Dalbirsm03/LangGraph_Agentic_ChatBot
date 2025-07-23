@@ -16,17 +16,17 @@ class ChatbotWithToolNode:
     def __init__(self,model):
         self.llm = model
 
-    def process(self, state: State) -> dict:
-        """
-        Processes the input state and generates a response with tool integration.
-        """
-        user_input = state["messages"][-1] if state["messages"] else ""
-        llm_response = self.llm.invoke([{"role": "user", "content": user_input}])
+    # def process(self, state: State) -> dict:
+    #     """
+    #     Processes the input state and generates a response with tool integration.
+    #     """
+    #     user_input = state["messages"][-1] if state["messages"] else ""
+    #     llm_response = self.llm.invoke([{"role": "user", "content": user_input}])
 
-        # Simulate tool-specific logic
-        tools_response = f"Tool integration for: '{user_input}'"
+    #     # Simulate tool-specific logic
+    #     tools_response = f"Tool integration for: '{user_input}'"
 
-        return {"messages": [llm_response, tools_response]}
+    #     return {"messages": [llm_response, tools_response]}
     
 
     def create_chatbot(self, tools):

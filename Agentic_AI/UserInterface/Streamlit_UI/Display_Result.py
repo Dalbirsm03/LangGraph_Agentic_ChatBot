@@ -38,3 +38,18 @@ class DisplayResultStreamlit:
 
             with st.chat_message("assistant"):
                 st.write(final_response if final_response else "No relevant results found.")
+        if usecase == "AI News Bot":
+            with st.chat_message("user"):
+                st.write(user_message)
+
+            final_response = ""
+
+            for event in graph.stream({'messages': ("user", user_message)}):
+                for value in event.values():
+                    for msg in value["messages"]:
+                        # Check if it's a ToolMessage and extract content
+                        if hasattr(msg, "content") and msg.content:
+                            final_response = msg.content
+
+            with st.chat_message("assistant"):
+                st.write(final_response if final_response else "No relevant results found.")
