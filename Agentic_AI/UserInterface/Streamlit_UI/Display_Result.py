@@ -32,13 +32,12 @@ class DisplayResultStreamlit:
             for event in graph.stream({'messages': ("user", user_message)}):
                 for value in event.values():
                     for msg in value["messages"]:
-                        # Check if it's a ToolMessage and extract content
                         if hasattr(msg, "content") and msg.content:
                             final_response = msg.content
 
             with st.chat_message("assistant"):
                 st.write(final_response if final_response else "No relevant results found.")
-        if usecase == "AI News Bot":
+        if usecase == "AI News Agent":
             with st.chat_message("user"):
                 st.write(user_message)
 
@@ -47,9 +46,27 @@ class DisplayResultStreamlit:
             for event in graph.stream({'messages': ("user", user_message)}):
                 for value in event.values():
                     for msg in value["messages"]:
-                        # Check if it's a ToolMessage and extract content
                         if hasattr(msg, "content") and msg.content:
                             final_response = msg.content
 
             with st.chat_message("assistant"):
                 st.write(final_response if final_response else "No relevant results found.")
+
+        elif usecase == "SQL Agent":
+            state = {"question": user_message}
+            with st.chat_message("user"):
+                st.write(user_message)
+
+            final_answer = None
+
+            for step in graph.stream(state, stream_mode="values"):
+                if "answer" in step:
+                    final_answer = step["answer"]
+
+            if final_answer:
+                with st.chat_message("assistant"):
+                    st.markdown("🧠 **Final Answer:**")
+                    st.write(final_answer)
+            else:
+                with st.chat_message("assistant"):
+                    st.write("⚠️ No answer was generated.")

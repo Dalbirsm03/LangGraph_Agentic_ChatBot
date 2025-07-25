@@ -19,3 +19,7 @@ langchain-huggingface
 arxiv
 tavily-python
 langchain-tavily
+sqlalchemy
+pymysql
+mysql-connector-python
+cryptography

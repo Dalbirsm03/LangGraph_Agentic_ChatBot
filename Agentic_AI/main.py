@@ -5,6 +5,9 @@ from Agentic_AI.LLms.Gemini import GeminiLLM
 from Agentic_AI.LLms.Qwen import QwenLLM
 from Agentic_AI.UserInterface.Streamlit_UI.Display_Result import DisplayResultStreamlit
 from Agentic_AI.UserInterface.Streamlit_UI.Load_UI import LoadStreamlitUI
+from urllib.parse import quote_plus
+from sqlalchemy import create_engine
+from langchain_community.utilities import SQLDatabase
 
 def load_app():
     ui = LoadStreamlitUI()
@@ -40,8 +43,27 @@ def load_app():
 
             llm = llm_object.get_llm_model()
             usecase = user_control_input.get("selected_usecase")
+            if usecase == "SQL Agent":
+                DB_USER = user_control_input.get("DB_USER")
+                DB_PASSWORD = user_control_input.get("DB_PASSWORD")
+                DB_HOST = user_control_input.get("DB_HOST")
+                DB_NAME = user_control_input.get("DB_NAME")
 
-            graph_builder = Graph_Builder(llm)
+                if not all([DB_USER, DB_PASSWORD, DB_HOST, DB_NAME]):
+                    st.error("❌ Please enter all required database credentials.")
+                    return
+
+                try:
+                    encoded_password = quote_plus(DB_PASSWORD)
+                    engine = create_engine(f'mysql+pymysql://{DB_USER}:{encoded_password}@{DB_HOST}/{DB_NAME}')
+                    db = SQLDatabase(engine=engine)
+                except Exception as e:
+                    st.error(f"❌ Database connection failed: {e}")
+                    return
+
+                graph_builder = Graph_Builder(llm, db=db)
+            else:
+                graph_builder = Graph_Builder(llm)
             try:
                 graph = graph_builder.setup_graph(usecase)
                 print(user_message)
@@ -52,5 +74,4 @@ def load_app():
         except Exception as e:
              st.error(f"Error: Graph set up failed- {e}")
              return
-
 

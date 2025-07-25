@@ -13,8 +13,9 @@ class State(TypedDict):
 
 class Basic_Node:
 
-    def __init__(self,llm):
+    def __init__(self,llm,db = None):
         self.llm = llm
+        self.db = db
     
     def process(self,state: State)-> dict:
         return {"messages": self.llm.invoke(state['messages'])}

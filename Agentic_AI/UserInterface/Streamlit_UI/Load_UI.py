@@ -45,7 +45,14 @@ class LoadStreamlitUI:
 
 
             self.user_controls["selected_usecase"] = st.selectbox("Select Usecases", usecase_options)
-            if self.user_controls["selected_usecase"] == "AI News Bot":
+            if self.user_controls["selected_usecase"] == "SQL Agent":
+                st.markdown("### 🗃️ Enter SQL Database Details")
+                self.user_controls["DB_USER"] = st.text_input("DB User", os.getenv("DB_USER", ""), key="db_user")
+                self.user_controls["DB_PASSWORD"] = st.text_input("DB Password", os.getenv("DB_PASSWORD", ""), type="password", key="db_password")
+                self.user_controls["DB_HOST"] = st.text_input("DB Host", os.getenv("DB_HOST", ""), key="db_host")
+                self.user_controls["DB_NAME"] = st.text_input("DB Name", os.getenv("DB_NAME", ""), key="db_name")
+
+            if self.user_controls["selected_usecase"] == "AI News Agent":
                 os.environ["TAVILY_API_KEY"]=self.user_controls["TAVILY_API_KEY"]=st.session_state["TAVILY_API_KEY"]=st.text_input("TAVILY API KEY",type="password")
                 if not self.user_controls["TAVILY_API_KEY"]:
                     st.warning("⚠️ Please enter your Tavily API key to proceed. Get one from: https://app.tavily.com/account/api-keys")
