@@ -1,4 +1,4 @@
-# 🧠 Agentic AI System – Built with LangGrapg, Traced with LangSmith
+# 🧠 Agentic AI System – Built with LangGraph, Traced with LangSmith
 
 A powerful, modular **Agentic AI System** built on top of [LangGraph](https://github.com/langchain-ai/langgraph), [LangChain](https://github.com/langchain-ai/langchain), and [Pydantic](https://docs.pydantic.dev/). This framework enables dynamic tool routing, LLM-based reasoning, and debugging capabilities using external APIs and custom logic, with **LangSmith observability** baked in.
 
