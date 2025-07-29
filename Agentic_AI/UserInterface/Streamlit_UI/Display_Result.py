@@ -70,3 +70,22 @@ class DisplayResultStreamlit:
             else:
                 with st.chat_message("assistant"):
                     st.write("⚠️ No answer was generated.")
+
+        elif usecase == "Debugger Agent":
+            state = {"question": user_message}
+            with st.chat_message("user"):
+                st.write(user_message)
+
+            final_answer = None
+
+            for step in graph.stream(state, stream_mode="values"):
+                if "aggregate" in step:
+                    final_answer = step["aggregate"]
+
+            if final_answer:
+                with st.chat_message("assistant"):
+                    st.markdown("🧠 **Final Answer:**")
+                    st.write(final_answer[0] if isinstance(final_answer, list) else final_answer)
+            else:
+                with st.chat_message("assistant"):
+                    st.write("⚠️ No answer was generated.")

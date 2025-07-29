@@ -1,3 +1,5 @@
+import os
+from langsmith import Client
 import streamlit as st
 from Agentic_AI.Graphs.graph import Graph_Builder
 from Agentic_AI.LLms.GROQ import GroqLLM
@@ -10,6 +12,20 @@ from sqlalchemy import create_engine
 from langchain_community.utilities import SQLDatabase
 
 def load_app():
+    with st.sidebar:
+            st.write("## LangSmith Configuration")
+            langsmith_api_key = st.text_input("LangSmith API Key (Optional)", type="password")
+            if langsmith_api_key:
+                os.environ["LANGSMITH_API_KEY"] = langsmith_api_key
+                os.environ["LANGSMITH_TRACING_V2"] = "true"
+                os.environ["LANGSMITH_ENDPOINT"] = "https://api.smith.langchain.com"
+                os.environ["LANGSMITH_PROJECT"] = "agentic_chatbot"
+                try:
+                    Client()  # Test connection
+                    st.success("✅ LangSmith connected!")
+                except Exception as e:
+                    st.error(f"❌ LangSmith Error: {str(e)}")
+
     ui = LoadStreamlitUI()
     user_control_input = ui.load_streamlit_ui()
     if not user_control_input:
@@ -74,4 +90,3 @@ def load_app():
         except Exception as e:
              st.error(f"Error: Graph set up failed- {e}")
              return
-

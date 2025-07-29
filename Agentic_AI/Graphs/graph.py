@@ -2,6 +2,9 @@ from Agentic_AI.Nodes.Basic_ChatBot_Node import Basic_Node, State as BasicState
 from Agentic_AI.Nodes.Tool_node import ChatbotWithToolNode, State as ToolState
 from Agentic_AI.Nodes.AI_node import AINEWSWithToolNode, State as AINewsState
 from Agentic_AI.Nodes.SQL_node import EState as SQLState, SQLNodes
+
+from Agentic_AI.Tools.Tavily_Debug import  get_tavily_tool_debug
+from Agentic_AI.Nodes.Debugger_node import DState , DebuggerNode
 from langgraph.graph import START, END, StateGraph
 from langgraph.prebuilt import tools_condition
 from Agentic_AI.Tools.Arxiv import the_tool_node, get_tools
@@ -10,10 +13,11 @@ from Agentic_AI.Tools.Tavily import tavily_tool_node, get_tavily_tool
 
 class Graph_Builder:
 
-    def __init__(self, llm, db=None):
+    def __init__(self, llm, db=None, langsmith_client=None):
         self.db = db
         self.llm = llm
         self.graph_builder = None
+        self.langsmith_client = langsmith_client
         
     def basic_chatbot_Graph(self):
         self.graph_builder = StateGraph(BasicState)
@@ -67,6 +71,22 @@ class Graph_Builder:
         self.graph_builder.add_edge("Execute", "Answer")
         self.graph_builder.add_edge("Answer", END)
 
+    def debugger_graph(self):
+        self.graph_builder = StateGraph(DState)
+        self.obj = DebuggerNode(self.llm)
+        self.graph_builder.add_node("Tavily", self.obj.process)
+
+        self.graph_builder.add_node("Stack",self.obj.stack_node)
+        self.graph_builder.add_node("Combination",self.obj.aggregator)
+
+        self.graph_builder.add_edge(START,"Tavily")
+        self.graph_builder.add_edge(START,"Stack")
+        self.graph_builder.add_edge("Tavily","Combination")
+        self.graph_builder.add_edge("Stack","Combination")
+        self.graph_builder.add_edge("Combination",END)
+
+
+
     def setup_graph(self, usecase: str):
         if usecase == "Basic Chatbot":
             self.basic_chatbot_Graph()
@@ -75,9 +95,9 @@ class Graph_Builder:
         elif usecase == "AI News Agent":
             self.ai_news_builder_graph()
         elif usecase == "SQL Agent":
-            if not self.db:
-                raise ValueError("SQL Agent requires a database connection.")
             self.sql_graph()
+        elif usecase == "Debugger Agent":
+            self.debugger_graph()
         else:
             raise ValueError(f"Unknown usecase: {usecase}")
 
